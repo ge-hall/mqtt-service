@@ -2,12 +2,13 @@
   "name": "mqtt_service",
   "version": "1.0.0",
   "description": "Service Broker for listening to and storing home IoT info.",
-  "main": "index.js",
+  "main": "src/index.js",
   "dependencies": {
-    "mqtt": "^2.18.8",
     "dotenv": "^6.0.0",
     "knex": "^0.15.2",
-    "pg": "^7.4.3"
+    "mqtt": "^2.18.8",
+    "pg": "^7.4.3",
+    "yalm": "^4.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -15,12 +16,15 @@
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-2": "^6.24.1",
     "eslint": "^5.5.0",
-    "nodemon": "^1.18.4"
+    "nodemon": "^1.18.4",
+    "yarn": "^1.10.1"
   },
   "scripts": {
-    "start": "node src/index.js",
+    "start": "nodemon --exec babel-node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Andrew Ge-Hall",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": "https://github.com/ge-hall/mqtt-service.git",
+  "private": null
 }
