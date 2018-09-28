@@ -26,5 +26,5 @@
   "author": "Andrew Ge-Hall",
   "license": "ISC",
   "repository": "https://github.com/ge-hall/mqtt-service.git",
-  "private": null
+  "private": false
 }

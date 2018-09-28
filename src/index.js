@@ -1,35 +1,72 @@
-import 'dotenv/config';
-const log = require('yalm');
+import "dotenv/config";
+
+const log = require("yalm");
+log.setLevel("debug");
+
+var db = require("knex")({
+    client: "pg",
+    version: "7.2",
+    connection: {
+        host: "127.0.0.1",
+        user: process.env.PGUSER,
+        password: process.env.PGPASSWORD,
+        database: process.env.DB
+    },
+    debug: true
+});
+
 var Mqtt = require("mqtt");
 //var client = mqtt.connect("mqtt://test.mosquitto.org");
 //MQTT_SERVER
 var mqtt = Mqtt.connect(process.env.MQTT_SERVER);
 mqtt.on("connect", function() {
-    mqtt.subscribe("presence", function(err) {
+    mqtt.subscribe("hello", function(err) {
         if (!err) {
-            mqtt.publish("presence", "Hello mqtt");
+            mqtt.publish("hello", "Hello there");
         }
     });
 });
-
+let buffer = [];
 mqtt.on("message", function(topic, message) {
     // message is Buffer
-    console.log(message.toString());
+    log.debug(message.toString());
+    // respond to message only once by keeping copy of recent messages published
+    let msg = `Hello there, ${message}`;
+    if (
+        buffer.find(el => {
+            log.debug(
+                `${el}===${message} which is ${el.localeCompare(message)}`
+            );
+            return el.localeCompare(message) == 0;
+        })
+    ) {
+        log.debug(`${msg} is a duplicate`);
+    } else {
+        buffer.push(msg);
+        db("topic")
+            .insert([{ topic: topic, value: message }])
+            .catch(e => {
+                log.error(`exception on insert:\n${e}`);
+            });
+
+        log.debug("pushing to buffer, store and publish!");
+        mqtt.publish(topic, msg);
+    }
     //client.end();
 });
 
-mqtt.on('error', err => {
-    log.error('mqtt', err);
+mqtt.on("error", err => {
+    log.error("mqtt", err);
 });
 
-mqtt.on('close', () => {
-    log.warn('mqtt close');
+mqtt.on("close", () => {
+    log.warn("mqtt close");
 });
 
-mqtt.on('offline', () => {
-    log.warn('mqtt offline');
+mqtt.on("offline", () => {
+    log.warn("mqtt offline");
 });
 
-mqtt.on('reconnect', () => {
-    log.info('mqtt reconnect');
+mqtt.on("reconnect", () => {
+    log.info("mqtt reconnect");
 });

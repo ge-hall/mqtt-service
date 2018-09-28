@@ -13,7 +13,7 @@ module.exports = {
   staging: {
     client: 'postgresql',
     connection: {
-      database: 'my_db',
+      database: 'my_dbknex',
       user:     'username',
       password: 'password'
     },
